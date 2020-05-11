@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "j3Zq60xmha13jPo85ZA/ZquQXYu37IsahNx+wMtNk+LfH3Ey6BjVCgBH1LzFx9xfz5/L68UH7QOeTub/2NqP0A==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\TaHan\\Downloads\\TimHanewichToolkit\\TimHanewichToolkit.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\TaHan\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\TaHan\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
