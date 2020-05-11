@@ -1,0 +1,9 @@
+C:\Users\TaHan\Downloads\TimHanewichToolkit\bin\Debug\netstandard2.0\TimHanewichToolkit.deps.json
+C:\Users\TaHan\Downloads\TimHanewichToolkit\bin\Debug\netstandard2.0\TimHanewichToolkit.dll
+C:\Users\TaHan\Downloads\TimHanewichToolkit\bin\Debug\netstandard2.0\TimHanewichToolkit.pdb
+C:\Users\TaHan\Downloads\TimHanewichToolkit\obj\Debug\netstandard2.0\TimHanewichToolkit.csprojAssemblyReference.cache
+C:\Users\TaHan\Downloads\TimHanewichToolkit\obj\Debug\netstandard2.0\TimHanewichToolkit.csproj.CoreCompileInputs.cache
+C:\Users\TaHan\Downloads\TimHanewichToolkit\obj\Debug\netstandard2.0\TimHanewichToolkit.AssemblyInfoInputs.cache
+C:\Users\TaHan\Downloads\TimHanewichToolkit\obj\Debug\netstandard2.0\TimHanewichToolkit.AssemblyInfo.cs
+C:\Users\TaHan\Downloads\TimHanewichToolkit\obj\Debug\netstandard2.0\TimHanewichToolkit.dll
+C:\Users\TaHan\Downloads\TimHanewichToolkit\obj\Debug\netstandard2.0\TimHanewichToolkit.pdb
