@@ -19,7 +19,7 @@ namespace TimHanewichToolkit
 
         public TimeSpan GetElapsedTime()
         {
-            if (EndTime != null && StartTime != null)
+            if (EndTime == null && StartTime == null)
             {
                 throw new Exception("You tried to get the elapsed time for a timer that has either not been started or not been stopped yet.");
             }
