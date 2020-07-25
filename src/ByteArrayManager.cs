@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TimHanewichToolkit
+namespace TimHanewich.Toolkit
 {
     public class ByteArrayManager
     {

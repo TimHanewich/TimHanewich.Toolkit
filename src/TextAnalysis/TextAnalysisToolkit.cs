@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TimHanewichToolkit.TextAnalysis
+namespace TimHanewich.Toolkit.TextAnalysis
 {
     public class TextAnalysisToolkit
     {

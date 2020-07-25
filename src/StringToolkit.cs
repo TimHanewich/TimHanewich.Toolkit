@@ -1,6 +1,6 @@
 using System;
 
-namespace TimHanewichToolkit
+namespace TimHanewich.Toolkit
 {
     public static class HanewichStringToolkit
     {

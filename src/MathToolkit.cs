@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TimHanewichToolkit
+namespace TimHanewich.Toolkit
 {
     public static class MathToolkit
     {

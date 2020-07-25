@@ -1,6 +1,6 @@
 using System;
 
-namespace TimHanewichToolkit.TextAnalysis
+namespace TimHanewich.Toolkit.TextAnalysis
 {
     public class TextValuePair
     {

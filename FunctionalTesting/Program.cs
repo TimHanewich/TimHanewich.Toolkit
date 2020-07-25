@@ -1,5 +1,5 @@
 ﻿using System;
-using TimHanewichToolkit;
+using TimHanewich.Toolkit;
 using System.Threading.Tasks;
 
 namespace FunctionalTesting
