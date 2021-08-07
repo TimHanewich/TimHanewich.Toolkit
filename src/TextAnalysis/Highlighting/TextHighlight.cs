@@ -24,9 +24,9 @@ namespace TimHanewich.Toolkit.TextAnalysis.Highlighting
             return ToReturn.ToArray();
         }
     
-        public static string ReadHighlight(string body, TextHighlight highlight)
+        public static string ReadHighlight(string body, TextHighlight highlight, int buffer_around = 0)
         {
-            string ToReturn = body.Substring(highlight.BeginPosition, highlight.Length);
+            string ToReturn = body.Substring(highlight.BeginPosition - buffer_around, highlight.Length + (buffer_around * 2));
             return ToReturn;
         }
     }
