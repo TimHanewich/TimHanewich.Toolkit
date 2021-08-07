@@ -6,7 +6,7 @@ namespace TimHanewich.Toolkit.TextAnalysis.Highlighting
     public class TextHighlight
     {
         public int BeginPosition {get; set;}
-        public int EndPosition {get; set;}
+        public int Length {get; set;}
 
         public static TextHighlight[] MakeHighlights(string body, string highlight)
         {
@@ -17,11 +17,17 @@ namespace TimHanewich.Toolkit.TextAnalysis.Highlighting
             {
                 TextHighlight th = new TextHighlight();
                 th.BeginPosition = NextIndex;
-                th.EndPosition = NextIndex + highlight.Length;
+                th.Length = highlight.Length;
                 ToReturn.Add(th);
                 NextIndex = body.IndexOf(highlight, NextIndex + 1);
             }
             return ToReturn.ToArray();
+        }
+    
+        public static string ReadHighlight(string body, TextHighlight highlight)
+        {
+            string ToReturn = body.Substring(highlight.BeginPosition, highlight.Length);
+            return ToReturn;
         }
     }
 }
