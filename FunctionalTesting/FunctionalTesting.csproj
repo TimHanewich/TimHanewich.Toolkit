@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\src\TimHanewichToolkit.csproj" />
+    <ProjectReference Include="..\src\TimHanewich.Toolkit.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
