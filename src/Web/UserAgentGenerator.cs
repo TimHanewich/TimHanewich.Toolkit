@@ -10,9 +10,9 @@ namespace TimHanewich.Toolkit.Web
             //Assemble name part
             string NamePart = "";
             Random r = new Random();
-            if (r.Next(0, 2) == 1)
+            if (r.NextDouble() > 0.5)
             {
-                NamePart = RandomWord() + RandomWord().ToUpper();
+                NamePart = RandomWord() + RandomWord();
             }
             else
             {
@@ -22,7 +22,7 @@ namespace TimHanewich.Toolkit.Web
             //Assemble version part
             string VersionPart = RandomNumber().ToString() + "." + RandomNumber().ToString() + "." + RandomNumber().ToString();
 
-            string ToReturn = NamePart = "/" + VersionPart;
+            string ToReturn = NamePart + "/" + VersionPart;
             return ToReturn;
         }
 
