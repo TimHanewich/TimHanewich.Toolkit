@@ -33,6 +33,12 @@ namespace TimHanewich.Toolkit.Web
             if (QueryParameters.Length > 0)
             {
 
+                //If the last character is a forward slash, remove it
+                if (ToReturn.Substring(ToReturn.Length - 1, 1) == "/")
+                {
+                    ToReturn = ToReturn.Substring(0, ToReturn.Length - 1);
+                }
+
                 //Add an ending question mark if there isn't one.
                 if (ToReturn.Substring(ToReturn.Length - 1, 1) != "?")
                 {
