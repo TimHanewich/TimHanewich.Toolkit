@@ -66,6 +66,12 @@ namespace TimHanewich.Toolkit.OData
             }
         }
 
+        //top
+        public int? top {get; set;} = null;
+
+        //skpi
+        public int? skip {get; set;} = null;
+    
 
         #endregion
 
@@ -256,6 +262,32 @@ namespace TimHanewich.Toolkit.OData
                         }
                     }
                     _orderby = orders.ToArray();
+                }
+
+                //top
+                if (kvp.Key.ToLower() == "$top")
+                {
+                    try
+                    {
+                        top = Convert.ToInt32(kvp.Value);
+                    }
+                    catch
+                    {
+                        throw new Exception("Value '" + kvp.Value + "' is not a valid integer, used as the top parameter in the query");
+                    }
+                }
+
+                //skip
+                if (kvp.Key.ToLower() == "$skip")
+                {
+                    try
+                    {
+                        skip = Convert.ToInt32(kvp.Value);
+                    }
+                    catch
+                    {
+                        throw new Exception("Value '" + kvp.Value + "' is not a valid integer, used as the skip parameter in the query");
+                    }
                 }
 
 
