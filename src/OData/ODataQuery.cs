@@ -49,6 +49,24 @@ namespace TimHanewich.Toolkit.OData
             }
         }
 
+        //orderby
+        private ODataOrder[] _orderby;
+        public ODataOrder[] orderby
+        {
+            get
+            {
+                if (_orderby == null)
+                {
+                    return new ODataOrder[]{};
+                }
+                else
+                {
+                    return _orderby;
+                }
+            }
+        }
+
+
         #endregion
 
         #region "Query param manipulation"
@@ -208,6 +226,36 @@ namespace TimHanewich.Toolkit.OData
                         ParsedFilters.Add(ThisFilter);
                     }
                     _filter = ParsedFilters.ToArray();
+                }
+
+                //orderby
+                if (kvp.Key.ToLower() == "$orderby")
+                {
+                    string[] OrderByOrders = kvp.Value.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries);
+                    List<ODataOrder> orders = new List<ODataOrder>();
+                    foreach (string orderStr in OrderByOrders)
+                    {
+                        string[] OrderParts = orderStr.Split(new string[]{" ", "%20"}, StringSplitOptions.RemoveEmptyEntries);
+                        if (OrderParts.Length == 2)
+                        {
+                            ODataOrder order = new ODataOrder();
+                            order.ColumnName = OrderParts[0];
+                            if (OrderParts[1].ToLower() == "asc")
+                            {
+                                order.Direction = OrderDirection.Ascending;
+                            }
+                            else if (OrderParts[1].ToLower() == "desc")
+                            {
+                                order.Direction = OrderDirection.Descending;
+                            }
+                            else
+                            {
+                                throw new Exception("OrderBy direction '" + orderStr + "' not recognized as valid order direction.");
+                            }
+                            orders.Add(order);
+                        }
+                    }
+                    _orderby = orders.ToArray();
                 }
 
 
