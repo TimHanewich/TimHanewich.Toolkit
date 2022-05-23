@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace TimHanewich.Toolkit.OData
 {
-    public class ODataQuery
+    public class ODataOperation
     {
         //Example queries:
         //https://host.com/service/Products?$select=Rating,ReleaseDate
@@ -123,15 +123,15 @@ namespace TimHanewich.Toolkit.OData
         #endregion
     
         
-        public ODataQuery()
+        public ODataOperation()
         {
 
         }
 
-        public static ODataQuery Parse(Uri path)
+        public static ODataOperation Parse(Uri path)
         {
 
-            ODataQuery ToReturn = new ODataQuery();
+            ODataOperation ToReturn = new ODataOperation();
 
             //Get the resource name
             string AbsPath = path.AbsolutePath;
@@ -344,9 +344,9 @@ namespace TimHanewich.Toolkit.OData
             return ToReturn;
         }
 
-        public static ODataQuery Parse(HttpRequestMessage request)
+        public static ODataOperation Parse(HttpRequestMessage request)
         {
-            ODataQuery ToReturn = Parse(request.RequestUri); //Does the query params and stuff
+            ODataOperation ToReturn = Parse(request.RequestUri); //Does the query params and stuff
 
             //Operation
             if (request.Method == HttpMethod.Get)
@@ -380,7 +380,7 @@ namespace TimHanewich.Toolkit.OData
                 }
                 catch
                 {
-                    throw new Exception("Unable to parse HttpRequestMessage into ODataQuery: The body of the request message was not valid JSON.");
+                    throw new Exception("Unable to parse HttpRequestMessage into ODataOperation: The body of the request message was not valid JSON.");
                 }
             }
 
