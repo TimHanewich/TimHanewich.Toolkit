@@ -177,7 +177,34 @@ namespace TimHanewich.Toolkit.OData
                         ODataFilter ThisFilter = new ODataFilter();
                         ThisFilter.ColumnName = filterParts[0];
                         ThisFilter.Operator = StringToOperator(ComparisonOperatorString);
-                        ThisFilter.SetValue(filterParts[1]);
+                        ThisFilter.SetValue(filterParts[1].Replace("%20", " "));
+
+                        //Is there a logical operator attached to this?
+                        List<string> OrTests = new List<string>();
+                        OrTests.Add("or " + f);
+                        OrTests.Add("or%20" + f);
+                        OrTests.Add("OR " + f);
+                        OrTests.Add("OR%20" + f);
+                        List<string> AndTests = new List<string>();
+                        AndTests.Add("and " + f);
+                        AndTests.Add("and%20" + f);
+                        AndTests.Add("AND " + f);
+                        AndTests.Add("AND%20" + f);
+                        foreach (string OrTest in OrTests)
+                        {
+                            if (kvp.Value.Contains(OrTest))
+                            {
+                                ThisFilter.LogicalOperatorPrefix = LogicalOperator.Or;
+                            }
+                        }
+                        foreach (string AndTest in AndTests)
+                        {
+                            if (kvp.Value.Contains(AndTest))
+                            {
+                                ThisFilter.LogicalOperatorPrefix = LogicalOperator.And;
+                            }
+                        }
+
                         ParsedFilters.Add(ThisFilter);
                     }
                     _filter = ParsedFilters.ToArray();
