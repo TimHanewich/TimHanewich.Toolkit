@@ -14,6 +14,9 @@ namespace TimHanewich.Toolkit.OData
 
         #region "Query params"
 
+        //Resource (table name)
+        public string Resource {get; set;}
+
         //select
         private string[] _select;
         public string[] select
@@ -120,6 +123,16 @@ namespace TimHanewich.Toolkit.OData
 
         public ODataQuery(Uri path)
         {
+
+            //Get the resource name
+            string AbsPath = path.AbsolutePath;
+            int lastForwardSlashLoc = AbsPath.LastIndexOf("/");
+            if (lastForwardSlashLoc != -1)
+            {
+                string resourceTitle = AbsPath.Substring(lastForwardSlashLoc+1);
+                Resource = resourceTitle;
+            }
+
             //Get the query portion
             string queryPortion = path.Query;
             queryPortion = queryPortion.Replace("?", "");
