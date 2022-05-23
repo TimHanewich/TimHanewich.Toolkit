@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Net;
 using System.Net.Http;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
 namespace TimHanewich.Toolkit.OData
@@ -13,6 +14,12 @@ namespace TimHanewich.Toolkit.OData
         //https://host.com/service/Products?$select=Rating,ReleaseDate
 
         #region "Query params"
+
+        //Query intention (i.e. Creating, updating, reading ,deleting)
+        public DataOperation Operation {get; set;}
+
+        //Body (JSON)
+        public JObject Payload {get; set;}
 
         //Resource (table name)
         public string Resource {get; set;}
@@ -121,8 +128,10 @@ namespace TimHanewich.Toolkit.OData
 
         }
 
-        public ODataQuery(Uri path)
+        public static ODataQuery Parse(Uri path)
         {
+
+            ODataQuery ToReturn = new ODataQuery();
 
             //Get the resource name
             string AbsPath = path.AbsolutePath;
@@ -130,7 +139,7 @@ namespace TimHanewich.Toolkit.OData
             if (lastForwardSlashLoc != -1)
             {
                 string resourceTitle = AbsPath.Substring(lastForwardSlashLoc+1);
-                Resource = resourceTitle;
+                ToReturn.Resource = resourceTitle;
             }
 
             //Get the query portion
@@ -157,7 +166,7 @@ namespace TimHanewich.Toolkit.OData
                 if (kvp.Key.ToLower() == "$select")
                 {
                     string[] columns = kvp.Value.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries);
-                    _select = columns;
+                    ToReturn._select = columns;
                 }
 
                 //filter
@@ -216,7 +225,7 @@ namespace TimHanewich.Toolkit.OData
                         //Construct the filter
                         ODataFilter ThisFilter = new ODataFilter();
                         ThisFilter.ColumnName = filterParts[0];
-                        ThisFilter.Operator = StringToOperator(ComparisonOperatorString);
+                        ThisFilter.Operator = ToReturn.StringToOperator(ComparisonOperatorString);
                         ThisFilter.SetValue(filterParts[1].Replace("%20", " "));
 
                         //Is there a logical operator attached to this?
@@ -247,7 +256,7 @@ namespace TimHanewich.Toolkit.OData
 
                         ParsedFilters.Add(ThisFilter);
                     }
-                    _filter = ParsedFilters.ToArray();
+                    ToReturn._filter = ParsedFilters.ToArray();
                 }
 
                 //orderby
@@ -277,7 +286,7 @@ namespace TimHanewich.Toolkit.OData
                             orders.Add(order);
                         }
                     }
-                    _orderby = orders.ToArray();
+                    ToReturn._orderby = orders.ToArray();
                 }
 
                 //top
@@ -285,7 +294,7 @@ namespace TimHanewich.Toolkit.OData
                 {
                     try
                     {
-                        top = Convert.ToInt32(kvp.Value);
+                        ToReturn.top = Convert.ToInt32(kvp.Value);
                     }
                     catch
                     {
@@ -298,7 +307,7 @@ namespace TimHanewich.Toolkit.OData
                 {
                     try
                     {
-                        skip = Convert.ToInt32(kvp.Value);
+                        ToReturn.skip = Convert.ToInt32(kvp.Value);
                     }
                     catch
                     {
@@ -311,30 +320,71 @@ namespace TimHanewich.Toolkit.OData
                 {
                     if (kvp.Value.ToLower() == "true")
                     {
-                        count = true;
+                        ToReturn.count = true;
                     }
                     else if (kvp.Value == "1")
                     {
-                        count = true;
+                        ToReturn.count = true;
                     }
                     else if (kvp.Value.ToLower() == "false")
                     {
-                        count = false;
+                        ToReturn.count = false;
                     }
                     else if (kvp.Value == "0")
                     {
-                        count = false;
+                        ToReturn.count = false;
                     }
                     else
                     {
                         throw new Exception("Value '" + kvp.Value + "' not valid for parameter 'count'");
                     }
                 }
-
-
             }
 
+            return ToReturn;
+        }
 
+        public static ODataQuery Parse(HttpRequestMessage request)
+        {
+            ODataQuery ToReturn = Parse(request.RequestUri); //Does the query params and stuff
+
+            //Operation
+            if (request.Method == HttpMethod.Get)
+            {
+                ToReturn.Operation = DataOperation.Read;
+            }
+            else if (request.Method == HttpMethod.Post)
+            {
+                ToReturn.Operation = DataOperation.Create;
+            }
+            else if (request.Method == new HttpMethod("PATCH") || request.Method == HttpMethod.Put)
+            {
+                ToReturn.Operation = DataOperation.Update;
+            }
+            else if (request.Method == HttpMethod.Delete)
+            {
+                ToReturn.Operation = DataOperation.Delete;
+            }
+            else
+            {
+                throw new Exception("Unable to parse HttpRequestMessage into OData query - unable to determine intention of '" + request.Method.ToString() + "' method.");
+            }
+
+            //Is there a body?
+            if (request.Content != null)
+            {
+                string body = request.Content.ReadAsStringAsync().Result;
+                try
+                {
+                    ToReturn.Payload = JObject.Parse(body);
+                }
+                catch
+                {
+                    throw new Exception("Unable to parse HttpRequestMessage into ODataQuery: The body of the request message was not valid JSON.");
+                }
+            }
+
+            return ToReturn;
         }
 
 
