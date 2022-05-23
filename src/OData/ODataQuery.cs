@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Net;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace TimHanewich.Toolkit.OData
 {
@@ -125,17 +126,58 @@ namespace TimHanewich.Toolkit.OData
                     List<string> filterSplitters = new List<string>();
                     filterSplitters.Add(" or ");
                     filterSplitters.Add(" and ");
-                    filterSplitters.Add(" OR ");
-                    filterSplitters.Add(" AND ");
+                    filterSplitters.Add("%20or%20");
+                    filterSplitters.Add("%20and%20");
+                    filterSplitters.Add(" or ".ToUpper());
+                    filterSplitters.Add(" and ".ToUpper());
+                    filterSplitters.Add("%20or%20".ToUpper());
+                    filterSplitters.Add("%20and%20".ToUpper());
+
                     string[] filters = kvp.Value.Split(filterSplitters.ToArray(), StringSplitOptions.RemoveEmptyEntries);
                     List<ODataFilter> ParsedFilters = new List<ODataFilter>();
                     foreach (string f in filters)
                     {
-                        string[] filterParts = f.Split(new string[]{" ", "%20"}, StringSplitOptions.RemoveEmptyEntries);
+
+                        //Splitters to separate out the components. This is designed to split the 3 parts (column name, operator, value)
+                        List<string> SplitterToComponents = new List<string>();
+                        SplitterToComponents.Add(" eq ");
+                        SplitterToComponents.Add(" gt ");
+                        SplitterToComponents.Add(" lt ");
+                        SplitterToComponents.Add(" ne ");
+                        SplitterToComponents.Add(" ge ");
+                        SplitterToComponents.Add(" le ");
+                        SplitterToComponents.Add("%20eq%20");
+                        SplitterToComponents.Add("%20gt%20");
+                        SplitterToComponents.Add("%20lt%20");
+                        SplitterToComponents.Add("%20ne%20");
+                        SplitterToComponents.Add("%20ge%20");
+                        SplitterToComponents.Add("%20le%20");
+                        SplitterToComponents.Add(" eq ".ToUpper());
+                        SplitterToComponents.Add(" gt ".ToUpper());
+                        SplitterToComponents.Add(" lt ".ToUpper());
+                        SplitterToComponents.Add(" ne ".ToUpper());
+                        SplitterToComponents.Add(" ge ".ToUpper());
+                        SplitterToComponents.Add(" le ".ToUpper());
+                        SplitterToComponents.Add("%20eq%20".ToUpper());
+                        SplitterToComponents.Add("%20gt%20".ToUpper());
+                        SplitterToComponents.Add("%20lt%20".ToUpper());
+                        SplitterToComponents.Add("%20ne%20".ToUpper());
+                        SplitterToComponents.Add("%20ge%20".ToUpper());
+                        SplitterToComponents.Add("%20le%20".ToUpper());
+                        
+                        //Split it
+                        string[] filterParts = f.Split(SplitterToComponents.ToArray(), StringSplitOptions.RemoveEmptyEntries);  //The first string will be the column name, the second will be the value. The comparison operator will be removed because it was split out.
+
+                        //Determine which one was the one that split it
+                        int StartLocationOfValue = f.IndexOf(filterParts[1]);
+                        string ComparisonOperatorString = f.Substring(filterParts[0].Length, StartLocationOfValue - filterParts[0].Length);
+                        ComparisonOperatorString = ComparisonOperatorString.ToLower().Replace("%20", "").Replace(" ", "");
+
+                        //Construct the filter
                         ODataFilter ThisFilter = new ODataFilter();
                         ThisFilter.ColumnName = filterParts[0];
-                        ThisFilter.Operator = StringToOperator(filterParts[1]);
-                        ThisFilter.SetValue(filterParts[2]);
+                        ThisFilter.Operator = StringToOperator(ComparisonOperatorString);
+                        ThisFilter.SetValue(filterParts[1]);
                         ParsedFilters.Add(ThisFilter);
                     }
                     _filter = ParsedFilters.ToArray();
