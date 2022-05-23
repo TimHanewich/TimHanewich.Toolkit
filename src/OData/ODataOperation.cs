@@ -18,6 +18,9 @@ namespace TimHanewich.Toolkit.OData
         //Query intention (i.e. Creating, updating, reading ,deleting)
         public DataOperation Operation {get; set;}
 
+        //Record Id (if it is an update and there is a specific record to update)
+        public string RecordIdentifier {get; set;} = null;
+
         //Body (JSON)
         public JObject Payload {get; set;}
 
@@ -138,8 +141,26 @@ namespace TimHanewich.Toolkit.OData
             int lastForwardSlashLoc = AbsPath.LastIndexOf("/");
             if (lastForwardSlashLoc != -1)
             {
-                string resourceTitle = AbsPath.Substring(lastForwardSlashLoc+1);
-                ToReturn.Resource = resourceTitle;
+                int StartParanthesis = AbsPath.LastIndexOf("(");
+                if (StartParanthesis == -1)
+                {
+                    string resourceTitle = AbsPath.Substring(lastForwardSlashLoc+1);
+                    ToReturn.Resource = resourceTitle;
+                }
+                else
+                {
+                    string resourceTitle = AbsPath.Substring(lastForwardSlashLoc + 1, StartParanthesis - lastForwardSlashLoc - 1);
+                    ToReturn.Resource = resourceTitle;
+                }      
+            }
+
+            //Record identifier
+            if (AbsPath.Substring(AbsPath.Length-1, 1) == ")")
+            {
+                int pOpen = AbsPath.LastIndexOf("(");
+                int pClose = AbsPath.LastIndexOf(")");
+                string rID = AbsPath.Substring(pOpen + 1, pClose - pOpen - 1);
+                ToReturn.RecordIdentifier = rID;
             }
 
             //Get the query portion
