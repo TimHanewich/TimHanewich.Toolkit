@@ -69,8 +69,11 @@ namespace TimHanewich.Toolkit.OData
         //top
         public int? top {get; set;} = null;
 
-        //skpi
+        //skip
         public int? skip {get; set;} = null;
+
+        //count
+        public bool count {get; set;} = false;
     
 
         #endregion
@@ -287,6 +290,31 @@ namespace TimHanewich.Toolkit.OData
                     catch
                     {
                         throw new Exception("Value '" + kvp.Value + "' is not a valid integer, used as the skip parameter in the query");
+                    }
+                }
+
+                //count
+                if(kvp.Key.ToLower() == "$count")
+                {
+                    if (kvp.Value.ToLower() == "true")
+                    {
+                        count = true;
+                    }
+                    else if (kvp.Value == "1")
+                    {
+                        count = true;
+                    }
+                    else if (kvp.Value.ToLower() == "false")
+                    {
+                        count = false;
+                    }
+                    else if (kvp.Value == "0")
+                    {
+                        count = false;
+                    }
+                    else
+                    {
+                        throw new Exception("Value '" + kvp.Value + "' not valid for parameter 'count'");
                     }
                 }
 
