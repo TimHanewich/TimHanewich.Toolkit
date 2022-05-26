@@ -27,7 +27,7 @@ namespace TimHanewich.Toolkit.OData
     
         public void SetValue(string value)
         {
-            _Value = "'" + value + "'";
+            _Value = ContainWithQuotesIfNeeded(value);
         }
 
         public void SetValue(float value)
@@ -103,6 +103,39 @@ namespace TimHanewich.Toolkit.OData
                     return "not";
                 default:
                     throw new Exception("No string value known for logical operator '" + op.ToString() + "'");
+            }
+        }
+
+        private bool ContainedByQuotes(string s)
+        {
+            string fChar = s.Substring(0, 1);
+            string lChar = s.Substring(s.Length - 1, 1);
+            if ((fChar == "'" && lChar == "'") || (fChar == "\"" && lChar == "\""))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public string ContainWithQuotesIfNeeded(string s)
+        {
+            if (s == null)
+            {
+                return "''";
+            }
+            else
+            {
+                if (ContainedByQuotes(s) == false)
+                {
+                    return "'" + s + "'";
+                }
+                else
+                {
+                    return s;
+                }
             }
         }
 
