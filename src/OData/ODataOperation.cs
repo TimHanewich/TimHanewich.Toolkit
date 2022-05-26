@@ -184,18 +184,19 @@ namespace TimHanewich.Toolkit.OData
             NameValueCollection nvc = HttpUtility.ParseQueryString(path.Query);
 
             //Loop through each parameter and parse
-            foreach (KeyValuePair<string, string> kvp in nvc)
+            foreach (string key in nvc.Keys)
             {
+                string value = nvc.Get(key);
 
                 //select
-                if (kvp.Key.ToLower() == "$select")
+                if (key.ToLower() == "$select")
                 {
-                    string[] columns = kvp.Value.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries);
+                    string[] columns = value.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries);
                     ToReturn._select = columns;
                 }
 
                 //filter
-                if (kvp.Key.ToLower() == "$filter")
+                if (key.ToLower() == "$filter")
                 {
                     List<string> filterSplitters = new List<string>();
                     filterSplitters.Add(" or ");
@@ -207,7 +208,7 @@ namespace TimHanewich.Toolkit.OData
                     filterSplitters.Add("%20or%20".ToUpper());
                     filterSplitters.Add("%20and%20".ToUpper());
 
-                    string[] filters = kvp.Value.Split(filterSplitters.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+                    string[] filters = value.Split(filterSplitters.ToArray(), StringSplitOptions.RemoveEmptyEntries);
                     List<ODataFilter> ParsedFilters = new List<ODataFilter>();
                     foreach (string f in filters)
                     {
@@ -266,14 +267,14 @@ namespace TimHanewich.Toolkit.OData
                         AndTests.Add("AND%20" + f);
                         foreach (string OrTest in OrTests)
                         {
-                            if (kvp.Value.Contains(OrTest))
+                            if (value.Contains(OrTest))
                             {
                                 ThisFilter.LogicalOperatorPrefix = LogicalOperator.Or;
                             }
                         }
                         foreach (string AndTest in AndTests)
                         {
-                            if (kvp.Value.Contains(AndTest))
+                            if (value.Contains(AndTest))
                             {
                                 ThisFilter.LogicalOperatorPrefix = LogicalOperator.And;
                             }
@@ -285,9 +286,9 @@ namespace TimHanewich.Toolkit.OData
                 }
 
                 //orderby
-                if (kvp.Key.ToLower() == "$orderby")
+                if (key.ToLower() == "$orderby")
                 {
-                    string[] OrderByOrders = kvp.Value.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries);
+                    string[] OrderByOrders = value.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries);
                     List<ODataOrder> orders = new List<ODataOrder>();
                     foreach (string orderStr in OrderByOrders)
                     {
@@ -315,53 +316,53 @@ namespace TimHanewich.Toolkit.OData
                 }
 
                 //top
-                if (kvp.Key.ToLower() == "$top")
+                if (key.ToLower() == "$top")
                 {
                     try
                     {
-                        ToReturn.top = Convert.ToInt32(kvp.Value);
+                        ToReturn.top = Convert.ToInt32(value);
                     }
                     catch
                     {
-                        throw new Exception("Value '" + kvp.Value + "' is not a valid integer, used as the top parameter in the query");
+                        throw new Exception("Value '" + value + "' is not a valid integer, used as the top parameter in the query");
                     }
                 }
 
                 //skip
-                if (kvp.Key.ToLower() == "$skip")
+                if (key.ToLower() == "$skip")
                 {
                     try
                     {
-                        ToReturn.skip = Convert.ToInt32(kvp.Value);
+                        ToReturn.skip = Convert.ToInt32(value);
                     }
                     catch
                     {
-                        throw new Exception("Value '" + kvp.Value + "' is not a valid integer, used as the skip parameter in the query");
+                        throw new Exception("Value '" + value + "' is not a valid integer, used as the skip parameter in the query");
                     }
                 }
 
                 //count
-                if(kvp.Key.ToLower() == "$count")
+                if(key.ToLower() == "$count")
                 {
-                    if (kvp.Value.ToLower() == "true")
+                    if (value.ToLower() == "true")
                     {
                         ToReturn.count = true;
                     }
-                    else if (kvp.Value == "1")
+                    else if (value == "1")
                     {
                         ToReturn.count = true;
                     }
-                    else if (kvp.Value.ToLower() == "false")
+                    else if (value.ToLower() == "false")
                     {
                         ToReturn.count = false;
                     }
-                    else if (kvp.Value == "0")
+                    else if (value == "0")
                     {
                         ToReturn.count = false;
                     }
                     else
                     {
-                        throw new Exception("Value '" + kvp.Value + "' not valid for parameter 'count'");
+                        throw new Exception("Value '" + value + "' not valid for parameter 'count'");
                     }
                 }
             }
