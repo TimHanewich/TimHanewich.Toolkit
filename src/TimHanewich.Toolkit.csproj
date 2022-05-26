@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="TimHanewich.Sql" Version="0.4.0" />
   </ItemGroup>
 
 </Project>
