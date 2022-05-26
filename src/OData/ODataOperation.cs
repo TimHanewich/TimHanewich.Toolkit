@@ -445,6 +445,17 @@ namespace TimHanewich.Toolkit.OData
                 }
                 else if (Operation == DataOperation.Update)
                 {
+                    //Need to add the where conditions
+                    foreach (ODataFilter filter in filter)
+                    {
+                        ConditionalClause cc = new ConditionalClause();
+                        cc.ColumnName = filter.ColumnName;
+                        cc.Operator = ODataOperatorToSqlOperator(filter.Operator);
+                        cc.Value = filter.Value;
+                        cc.UseQuotes = false; //a string in the url would already have those quotes, well at least single quotes
+                        uh.AddWhereClause(cc);
+                    }
+
                     return uh.ToUpdate();
                 }
                 else //This should never happen
