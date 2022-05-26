@@ -27,7 +27,7 @@ namespace TimHanewich.Toolkit.OData
     
         public void SetValue(string value)
         {
-            _Value = value;
+            _Value = "'" + value + "'";
         }
 
         public void SetValue(float value)
