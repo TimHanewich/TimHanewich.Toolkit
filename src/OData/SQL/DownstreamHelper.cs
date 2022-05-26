@@ -34,6 +34,12 @@ namespace TimHanewich.Sql
         {
             string cmd = "select ";
 
+            //Top?
+            if (Top.HasValue)
+            {
+                cmd = cmd + "top " + Top.Value.ToString() + " ";
+            }
+
             //Columns
             if (Columns.Count == 0)
             {
