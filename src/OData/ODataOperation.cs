@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Collections;
+using System.Collections.Specialized;
 
 namespace TimHanewich.Toolkit.OData
 {
@@ -164,23 +166,10 @@ namespace TimHanewich.Toolkit.OData
             }
 
             //Get the query portion
-            string queryPortion = path.Query;
-            queryPortion = queryPortion.Replace("?", "");
-            string[] paramPortions = queryPortion.Split(new string[]{"&"}, StringSplitOptions.RemoveEmptyEntries);
-            Dictionary<string, string> queryParameters = new Dictionary<string, string>();
-            foreach (string s in paramPortions)
-            {
-                int loc1 = s.IndexOf("=");
-                if (loc1 != -1)
-                {
-                    string paramName = s.Substring(0, loc1);
-                    string paramValue = s.Substring(loc1 + 1);
-                    queryParameters.Add(paramName, paramValue);
-                }
-            }
+            NameValueCollection nvc = HttpUtility.ParseQueryString(path.Query);
 
-            
-            foreach (KeyValuePair<string, string> kvp in queryParameters)
+            //Loop through each parameter and parse
+            foreach (KeyValuePair<string, string> kvp in nvc)
             {
 
                 //select
