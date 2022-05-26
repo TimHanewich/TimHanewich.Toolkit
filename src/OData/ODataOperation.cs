@@ -7,6 +7,8 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Specialized;
+using TimHanewich.Sql;
+using System.Linq;
 
 namespace TimHanewich.Toolkit.OData
 {
@@ -21,6 +23,7 @@ namespace TimHanewich.Toolkit.OData
         public DataOperation Operation {get; set;}
 
         //Record Id (if it is an update and there is a specific record to update)
+        public string RecordIdentifierColumnName {get; set;} = null; //the name of the column that is the primary key in the underlying DB.
         public string RecordIdentifier {get; set;} = null;
 
         //Body (JSON)
@@ -127,6 +130,7 @@ namespace TimHanewich.Toolkit.OData
 
         #endregion
     
+        #region "Constructors"
         
         public ODataOperation()
         {
@@ -416,6 +420,136 @@ namespace TimHanewich.Toolkit.OData
             return ToReturn;
         }
 
+        #endregion
+
+
+        public string ToSql()
+        {
+            if (Operation == DataOperation.Read)
+            {
+                DownstreamHelper dh = new DownstreamHelper();
+                dh.Table = Resource;
+
+                //Top
+                if (top.HasValue)
+                {
+                    dh.Top = top;
+                }
+
+                //Add each field
+                foreach (string s in select)
+                {
+                    dh.Columns.Add(s);
+                }
+
+                
+                //Add the where clauses
+                foreach (ODataFilter filter in filter)
+                {
+                    ConditionalClause cc = new ConditionalClause();
+                    cc.ColumnName = filter.ColumnName;
+                    cc.Operator = ODataOperatorToSqlOperator(filter.Operator);
+                    cc.Value = filter.Value;
+                    cc.UseQuotes = false; //a string in the url would already have those quotes, well at least single quotes
+                    dh.Where.Add(cc);
+                }
+
+                //Order by
+                foreach (ODataOrder odob in orderby)
+                {
+                    ReadOrder ro = new ReadOrder();
+                    ro.ColumnName = odob.ColumnName;
+                    if (odob.Direction == OrderDirection.Ascending)
+                    {
+                        ro.Direction = Sql.OrderDirection.Ascending;
+                    }
+                    else if (odob.Direction == OrderDirection.Descending)
+                    {
+                        ro.Direction = Sql.OrderDirection.Descending;
+                    }
+                    dh.OrderBy.Add(ro);
+                }
+
+                return dh.ToString();
+            }
+            else if (Operation == DataOperation.Create || Operation == DataOperation.Update)
+            {
+                TimHanewich.Sql.UpstreamHelper uh = new UpstreamHelper(Resource);
+
+                //Add the properties we have received
+                foreach (JProperty prop in Payload.Properties())
+                {
+                    if (prop.Value != null)
+                    {
+                        if (prop.Value.Type != JTokenType.Null)
+                        {
+                            //Does it need quotes
+                            bool NeedsQuotes = false;
+                            if (ValuesThatNeedQuotations().Contains(prop.Value.Type))
+                            {
+                                NeedsQuotes = true;
+                            }
+
+                            //Add it!
+                            uh.Add(prop.Name, prop.Value.ToString(), NeedsQuotes);
+                        }
+                    }
+                }
+
+                //Is there a specific resource to update?
+                if (RecordIdentifier != null)
+                {
+                    if (RecordIdentifier != "")
+                    {
+                        ConditionalClause cc = new ConditionalClause();
+                        cc.ColumnName = RecordIdentifierColumnName;
+                        cc.Operator = Sql.ComparisonOperator.Equals;
+                        cc.Value = RecordIdentifier;
+                        cc.UseQuotes = true;
+                        uh.AddWhereClause(cc);
+                    }
+                }
+
+                if (Operation == DataOperation.Create)
+                {
+                    return uh.ToInsert();
+                }
+                else if (Operation == DataOperation.Update)
+                {
+                    return uh.ToUpdate();
+                }
+                else //This should never happen
+                {
+                    throw new Exception("Create/Update operation not triggered.");
+                }
+            }
+            else if (Operation == DataOperation.Delete)
+            {
+                string ToReturn = "delete from " + Resource;
+                
+                //Where
+                if (filter.Length > 0)
+                {
+                    ToReturn = ToReturn + " where ";
+                    foreach (ODataFilter filt in filter)
+                    {
+                        string lp = "";
+                        if (filt.LogicalOperatorPrefix.HasValue)
+                        {
+                            lp = filt.LogicalOperatorPrefix.Value.ToString().ToLower() + " ";
+                        }
+                        ToReturn = ToReturn + lp + filt.ColumnName + " " + filt.Operator.ToSymbol() + " " + filt.Value + " ";
+                    }
+                }
+
+                return ToReturn.Trim();
+            }
+            else
+            {
+                throw new Exception("This class is not able to create a SQL operation for a '" + Operation.ToString() + " OData operation.");
+            }
+        }
+
 
         #region "Utility functions"
 
@@ -458,6 +592,80 @@ namespace TimHanewich.Toolkit.OData
                     return ComparisonOperator.LessThanOrEqualTo;
                 default:
                     throw new Exception("String '" + s + "' not recognized as a valid comparsion operator.");
+            }
+        }
+
+        private JTokenType[] ValuesThatNeedQuotations()
+        {
+            List<JTokenType> ToReturn = new List<JTokenType>();
+            ToReturn.Add(JTokenType.String);
+            ToReturn.Add(JTokenType.Date);
+            ToReturn.Add(JTokenType.TimeSpan);
+            ToReturn.Add(JTokenType.Undefined);
+            return ToReturn.ToArray();
+        }
+
+        private ComparisonOperator SqlOperatorToODataOperator(TimHanewich.Sql.ComparisonOperator co)
+        {
+            if (co == TimHanewich.Sql.ComparisonOperator.Equals)
+            {
+                return ComparisonOperator.Equals;
+            }
+            else if (co == TimHanewich.Sql.ComparisonOperator.GreaterThan)
+            {
+                return ComparisonOperator.GreaterThan;
+            }
+            else if (co == TimHanewich.Sql.ComparisonOperator.GreaterThanOrEqual)
+            {
+                return ComparisonOperator.GreaterThanOrEqualTo;
+            }
+            else if (co == TimHanewich.Sql.ComparisonOperator.LessThan)
+            {
+                return ComparisonOperator.LessThan;
+            }
+            else if (co == TimHanewich.Sql.ComparisonOperator.LessThanOrEqual)
+            {
+                return ComparisonOperator.LessThanOrEqualTo;
+            }
+            else if (co == TimHanewich.Sql.ComparisonOperator.Not)
+            {
+                return ComparisonOperator.NotEqualTo;
+            }
+            else
+            {
+                throw new Exception("There is not an equivalent OData comparison operator for the supplied SQL operator");
+            }
+        }
+
+        private TimHanewich.Sql.ComparisonOperator ODataOperatorToSqlOperator(ComparisonOperator co)
+        {
+            if (co == ComparisonOperator.Equals)
+            {
+                return TimHanewich.Sql.ComparisonOperator.Equals;
+            }
+            else if (co == ComparisonOperator.GreaterThan)
+            {
+                return TimHanewich.Sql.ComparisonOperator.GreaterThan;
+            }
+            else if (co == ComparisonOperator.GreaterThanOrEqualTo)
+            {
+                return TimHanewich.Sql.ComparisonOperator.GreaterThanOrEqual;
+            }
+            else if (co == ComparisonOperator.LessThan)
+            {
+                return TimHanewich.Sql.ComparisonOperator.LessThan;
+            }
+            else if (co == ComparisonOperator.LessThanOrEqualTo)
+            {
+                return TimHanewich.Sql.ComparisonOperator.LessThanOrEqual;
+            }
+            else if (co == ComparisonOperator.NotEqualTo)
+            {
+                return TimHanewich.Sql.ComparisonOperator.Not;
+            }
+            else
+            {
+                throw new Exception("There is not an SQL operator equivalent to the provided OData operator");
             }
         }
 
