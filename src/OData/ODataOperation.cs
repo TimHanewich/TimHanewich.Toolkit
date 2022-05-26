@@ -133,6 +133,21 @@ namespace TimHanewich.Toolkit.OData
 
         }
 
+        public static ODataOperation Parse(string url)
+        {
+            Uri u = null;
+            try
+            {
+                u = new Uri(url);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("The provided string is not a valid URI: " + ex.Message);
+            }
+
+            return ODataOperation.Parse(u);
+        }
+
         public static ODataOperation Parse(Uri path)
         {
 
