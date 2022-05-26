@@ -42,7 +42,7 @@ namespace TimHanewich.Toolkit.OData
     
         public void SetValue(Guid value)
         {
-            _Value = value.ToString();
+            _Value = "'" + value.ToString() + "'";
         }
 
         public override string ToString()
