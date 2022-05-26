@@ -10,8 +10,8 @@ namespace TimHanewich.Sql
         //Top
         public int? Top {get; set;} = null;
         
-        //Fields
-        public List<string> Fields {get; set;}
+        //Columns
+        public List<string> Columns {get; set;}
 
         //Resource
         public string Table {get; set;}
@@ -25,7 +25,7 @@ namespace TimHanewich.Sql
 
         public DownstreamHelper()
         {
-            Fields = new List<string>();
+            Columns = new List<string>();
             Where = new List<ConditionalClause>();
             OrderBy = new List<ReadOrder>();
         }
@@ -34,14 +34,14 @@ namespace TimHanewich.Sql
         {
             string cmd = "select ";
 
-            //Fields
-            if (Fields.Count == 0)
+            //Columns
+            if (Columns.Count == 0)
             {
                 cmd = cmd + "*";
             }
             else
             {
-                foreach (string fn in Fields)
+                foreach (string fn in Columns)
                 {
                     cmd = cmd + fn + ",";
                 }
