@@ -153,6 +153,9 @@ namespace TimHanewich.Toolkit.OData
 
             ODataOperation ToReturn = new ODataOperation();
 
+            //Default
+            ToReturn.Operation = DataOperation.Read;
+
             //Get the resource name
             string AbsPath = path.AbsolutePath;
             int lastForwardSlashLoc = AbsPath.LastIndexOf("/");
