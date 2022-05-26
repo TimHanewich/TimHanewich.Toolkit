@@ -33,56 +33,13 @@ namespace TimHanewich.Toolkit.OData
         public string Resource {get; set;}
 
         //select
-        private string[] _select;
-        public string[] select
-        {
-            get
-            {
-                if (_select == null)
-                {
-                    return new string[]{};
-                    
-                }
-                else
-                {
-                    return _select;
-                }
-            }
-        }
+        public List<string> select {get; set;}
 
         //filter
-        private ODataFilter[] _filter;
-        public ODataFilter[] filter
-        {
-            get
-            {
-                if (_filter == null)
-                {
-                    return new ODataFilter[]{};
-                }
-                else
-                {
-                    return _filter;
-                }
-            }
-        }
-
+        public List<ODataFilter> filter {get; set;}
+        
         //orderby
-        private ODataOrder[] _orderby;
-        public ODataOrder[] orderby
-        {
-            get
-            {
-                if (_orderby == null)
-                {
-                    return new ODataOrder[]{};
-                }
-                else
-                {
-                    return _orderby;
-                }
-            }
-        }
+        public List<ODataOrder> orderby {get; set;}
 
         //top
         public int? top {get; set;} = null;
@@ -96,45 +53,14 @@ namespace TimHanewich.Toolkit.OData
 
         #endregion
 
-        #region "Query param manipulation"
-
-        public void AddSelect(string column)
-        {
-            if (_select == null)
-            {
-                _select = new string[]{column};
-            }
-            else
-            {
-                List<string> ToSetSelectTo = new List<string>();
-                ToSetSelectTo.AddRange(_select);
-                ToSetSelectTo.Add(column);
-            }
-        }
-
-        public void RemoveSelect(string column)
-        {
-            if (_select != null)
-            {
-                List<string> ToSetSelectTo = new List<string>();
-                ToSetSelectTo.AddRange(_select);
-                ToSetSelectTo.Remove(column);
-                _select = ToSetSelectTo.ToArray();
-            }
-        }
-
-        public void ClearSelect()
-        {
-            _select = null;
-        }
-
-        #endregion
     
         #region "Constructors"
         
         public ODataOperation()
         {
-
+            select = new List<string>();
+            filter = new List<ODataFilter>();
+            orderby = new List<ODataOrder>();
         }
 
         public static ODataOperation Parse(string url)
@@ -199,7 +125,8 @@ namespace TimHanewich.Toolkit.OData
                 if (key.ToLower() == "$select")
                 {
                     string[] columns = value.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries);
-                    ToReturn._select = columns;
+                    ToReturn.select.Clear();
+                    ToReturn.select.AddRange(columns);
                 }
 
                 //filter
@@ -289,7 +216,8 @@ namespace TimHanewich.Toolkit.OData
 
                         ParsedFilters.Add(ThisFilter);
                     }
-                    ToReturn._filter = ParsedFilters.ToArray();
+                    ToReturn.filter.Clear();
+                    ToReturn.filter.AddRange(ParsedFilters);
                 }
 
                 //orderby
@@ -319,7 +247,8 @@ namespace TimHanewich.Toolkit.OData
                             orders.Add(order);
                         }
                     }
-                    ToReturn._orderby = orders.ToArray();
+                    ToReturn.orderby.Clear();
+                    ToReturn.orderby.AddRange(orders);
                 }
 
                 //top
@@ -528,7 +457,7 @@ namespace TimHanewich.Toolkit.OData
                 string ToReturn = "delete from " + Resource;
                 
                 //Where
-                if (filter.Length > 0)
+                if (filter.Count > 0)
                 {
                     ToReturn = ToReturn + " where ";
                     foreach (ODataFilter filt in filter)
