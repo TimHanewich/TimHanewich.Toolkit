@@ -370,6 +370,14 @@ namespace TimHanewich.Toolkit.OData
         {
             if (Operation == DataOperation.Read)
             {
+
+                //If it is a count, do that
+                if (count == true)
+                {
+                    string cmd = "select count(*) from " + Resource;
+                    return cmd;
+                }
+
                 DownstreamHelper dh = new DownstreamHelper();
                 dh.Table = Resource;
 
