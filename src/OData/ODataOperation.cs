@@ -35,7 +35,6 @@ namespace TimHanewich.Toolkit.OData
         public DataOperation Operation {get; set;}
 
         //Record Id (if it is an update and there is a specific record to update)
-        public string RecordIdentifierColumnName {get; set;} = null; //the name of the column that is the primary key in the underlying DB.
         public string RecordIdentifier {get; set;} = null;
 
         //Body (JSON)
@@ -447,20 +446,6 @@ namespace TimHanewich.Toolkit.OData
                             //Add it!
                             uh.Add(prop.Name, prop.Value.ToString(), NeedsQuotes);
                         }
-                    }
-                }
-
-                //Is there a specific resource to update?
-                if (RecordIdentifier != null)
-                {
-                    if (RecordIdentifier != "")
-                    {
-                        ConditionalClause cc = new ConditionalClause();
-                        cc.ColumnName = RecordIdentifierColumnName;
-                        cc.Operator = Sql.ComparisonOperator.Equals;
-                        cc.Value = RecordIdentifier;
-                        cc.UseQuotes = true;
-                        uh.AddWhereClause(cc);
                     }
                 }
 
