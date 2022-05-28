@@ -14,8 +14,20 @@ namespace TimHanewich.Toolkit.OData
 {
     public class ODataOperation
     {
-        //Example queries:
-        //https://host.com/service/Products?$select=Rating,ReleaseDate
+        
+        //Settings
+        private ODataSettings _Settings;
+        public ODataSettings Settings
+        {
+            get
+            {
+                if (_Settings == null)
+                {
+                    _Settings = new ODataSettings();
+                }
+                return _Settings;
+            }
+        }
 
         #region "Query params"
 
@@ -52,7 +64,6 @@ namespace TimHanewich.Toolkit.OData
     
 
         #endregion
-
     
         #region "Constructors"
         
