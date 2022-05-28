@@ -368,16 +368,6 @@ namespace TimHanewich.Toolkit.OData
 
         public string ToSql()
         {
-            //Validate
-            try
-            {
-                Validate();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Validation of the ODataOperation failed: " + ex.Message);
-            }
-
             if (Operation == DataOperation.Read)
             {
                 DownstreamHelper dh = new DownstreamHelper();
