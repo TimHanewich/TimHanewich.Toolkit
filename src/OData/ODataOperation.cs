@@ -365,6 +365,16 @@ namespace TimHanewich.Toolkit.OData
 
         public string ToSql()
         {
+            //Validate
+            try
+            {
+                Validate();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Validation of the ODataOperation failed: " + ex.Message);
+            }
+
             if (Operation == DataOperation.Read)
             {
                 DownstreamHelper dh = new DownstreamHelper();
@@ -498,6 +508,24 @@ namespace TimHanewich.Toolkit.OData
             else
             {
                 throw new Exception("This class is not able to create a SQL operation for a '" + Operation.ToString() + " OData operation.");
+            }
+        }
+
+        public void Validate()
+        {
+            //If it is an update or delete operation, check if they are using filters. If they are, ensure it was allowed. If not, throw an error
+            if (Operation == DataOperation.Update || Operation == DataOperation.Delete)
+            {
+                if (Settings.AllowMultiRowModification == false)
+                {
+                    if (filter != null)
+                    {
+                        if (filter.Count > 0)
+                        {
+                            throw new Exception("Multi-row modification is not allowed (using filters)");
+                        }
+                    }
+                }
             }
         }
 
