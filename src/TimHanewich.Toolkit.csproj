@@ -7,7 +7,7 @@
     <PackageIcon>ToolIcon.jpg</PackageIcon>
     <RepositoryUrl>https://github.com/TimHanewich/TimHanewich.Toolkit</RepositoryUrl>
     <PackageTags>tim hanewich,hanewich,timh,toolkit,tool</PackageTags>
-    <Version>4.0.0</Version>
+    <Version>4.1.0</Version>
     <Description>Unix time helper, matrix multiplication, random name generation, byte array management, string management, and more.</Description>
     <PackageId>TimHanewich.Toolkit</PackageId>
     <Product>TimHanewich.Toolkit</Product>
