@@ -509,11 +509,24 @@ namespace TimHanewich.Toolkit.OData
                     {
                         if (filter.Count > 0)
                         {
-                            throw new Exception("Multi-row modification is not allowed (using filters)");
+                            throw new Exception("Multi-row modification is not allowed, yet filters were used");
                         }
                     }
                 }
             }
+
+            //If it is an update or delete, MAKE SURE they are specifying a single record to modify via the record identifier
+            if (Operation == DataOperation.Update || Operation == DataOperation.Delete)
+            {
+                if (Settings.AllowMultiRowModification == false)
+                {
+                    if (RecordIdentifier == null || RecordIdentifier == "")
+                    {
+                        throw new Exception("Multi-row modification is not allowed. You must specify a single record to modify using the record modifier.");
+                    }
+                }
+            }
+
         }
 
 
