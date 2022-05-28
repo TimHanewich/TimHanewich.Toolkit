@@ -344,18 +344,22 @@ namespace TimHanewich.Toolkit.OData
             }
 
             //Is there a body?
-            if (request.Content != null)
+            if (ToReturn.Operation == DataOperation.Create || ToReturn.Operation == DataOperation.Update)
             {
-                string body = request.Content.ReadAsStringAsync().Result;
-                try
+                if (request.Content != null)
                 {
-                    ToReturn.Payload = JObject.Parse(body);
-                }
-                catch
-                {
-                    throw new Exception("Unable to parse HttpRequestMessage into ODataOperation: The body of the request message was not valid JSON.");
+                    string body = request.Content.ReadAsStringAsync().Result;
+                    try
+                    {
+                        ToReturn.Payload = JObject.Parse(body);
+                    }
+                    catch
+                    {
+                        throw new Exception("Unable to parse HttpRequestMessage into ODataOperation: The body of the request message was not valid JSON.");
+                    }
                 }
             }
+            
 
             return ToReturn;
         }
