@@ -98,6 +98,7 @@ namespace TimHanewich.Toolkit.OData
 
             //Get the resource name
             string AbsPath = path.AbsolutePath;
+            AbsPath = AbsPath.Replace("%20", " ");
             int lastForwardSlashLoc = AbsPath.LastIndexOf("/");
             if (lastForwardSlashLoc != -1)
             {
