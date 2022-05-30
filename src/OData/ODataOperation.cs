@@ -599,6 +599,14 @@ namespace TimHanewich.Toolkit.OData
             ub.Scheme = "https";
             ub.Path = ub.Path + "/" + Resource;
             ub.Path = ub.Path.Replace("//", "/"); //If a double slash was accidentally made, fix it.
+            if (RecordIdentifier != null)
+            {
+                if (RecordIdentifier != "")
+                {
+                    ub.Path = ub.Path + "(" + RecordIdentifier + ")";
+                }
+            }
+
             ub.Query = nvc.ToString(); //Save the query
             ToReturn.RequestUri = ub.Uri;
 
