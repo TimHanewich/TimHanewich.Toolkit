@@ -368,7 +368,7 @@ namespace TimHanewich.Toolkit.OData
         #endregion
 
 
-        public string ToSql()
+        public string ToSql(string pk_name)
         {
             if (Operation == DataOperation.Read)
             {
@@ -393,6 +393,15 @@ namespace TimHanewich.Toolkit.OData
                 foreach (string s in select)
                 {
                     dh.Columns.Add(s);
+                }
+
+                //Add the where clause - record identifier
+                if (RecordIdentifier != null)
+                {
+                    if (RecordIdentifier != "")
+                    {
+                        dh.Where.Add(new ConditionalClause(pk_name, Sql.ComparisonOperator.Equals, RecordIdentifier, true));
+                    }
                 }
 
                 
@@ -455,6 +464,16 @@ namespace TimHanewich.Toolkit.OData
                 }
                 else if (Operation == DataOperation.Update)
                 {
+
+                    //Add the where clause - record identifier
+                    if (RecordIdentifier != null)
+                    {
+                        if (RecordIdentifier != "")
+                        {
+                            uh.AddWhereClause(new ConditionalClause(pk_name, Sql.ComparisonOperator.Equals, RecordIdentifier, true));
+                        }
+                    }
+
                     //Need to add the where conditions
                     foreach (ODataFilter filter in filter)
                     {
@@ -476,6 +495,15 @@ namespace TimHanewich.Toolkit.OData
             else if (Operation == DataOperation.Delete)
             {
                 string ToReturn = "delete from " + Resource;
+
+                //Add the where clause - record identifier
+                if (RecordIdentifier != null)
+                {
+                    if (RecordIdentifier != "")
+                    {
+                        ToReturn = ToReturn + " where " + pk_name + " = '" + RecordIdentifier + "'";
+                    }
+                }
                 
                 //Where
                 if (filter.Count > 0)
