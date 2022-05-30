@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using TimHanewich.Sql;
 using System.Linq;
+using System.Text;
 
 namespace TimHanewich.Toolkit.OData
 {
@@ -600,6 +601,15 @@ namespace TimHanewich.Toolkit.OData
             ub.Path = ub.Path.Replace("//", "/"); //If a double slash was accidentally made, fix it.
             ub.Query = nvc.ToString(); //Save the query
             ToReturn.RequestUri = ub.Uri;
+
+            //Any payload?
+            if (Operation == DataOperation.Create || Operation == DataOperation.Update)
+            {
+                if (Payload != null)
+                {
+                    ToReturn.Content = new StringContent(Payload.ToString(), Encoding.UTF8, "application/json");
+                }
+            }
 
 
             return ToReturn;
