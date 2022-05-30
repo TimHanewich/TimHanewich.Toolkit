@@ -499,7 +499,7 @@ namespace TimHanewich.Toolkit.OData
             }
         }
 
-        public HttpRequestMessage ToHttpRequestMessage(string host)
+        public HttpRequestMessage ToHttpRequestMessage(string odata_endpoint)
         {
             HttpRequestMessage ToReturn = new HttpRequestMessage();
 
@@ -522,8 +522,7 @@ namespace TimHanewich.Toolkit.OData
             }
 
             //URL
-            UriBuilder ub = new UriBuilder();
-            ub.Host = host;
+            UriBuilder ub = new UriBuilder(odata_endpoint);
 
             //Construct the query params
             NameValueCollection nvc = HttpUtility.ParseQueryString(string.Empty);
@@ -597,7 +596,8 @@ namespace TimHanewich.Toolkit.OData
 
             //Set the uri
             ub.Scheme = "https";
-            ub.Path = Resource;
+            ub.Path = ub.Path + "/" + Resource;
+            ub.Path = ub.Path.Replace("//", "/"); //If a double slash was accidentally made, fix it.
             ub.Query = nvc.ToString(); //Save the query
             ToReturn.RequestUri = ub.Uri;
 
