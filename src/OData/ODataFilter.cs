@@ -45,7 +45,11 @@ namespace TimHanewich.Toolkit.OData
             _Value = "'" + value.ToString() + "'";
         }
 
-        public override string ToString()
+
+
+        #region "String conversion"
+
+        public string ToODataString()
         {
             if (ColumnName == null)
             {
@@ -67,6 +71,13 @@ namespace TimHanewich.Toolkit.OData
 
             return ToReturn;
         }
+
+        public override string ToString()
+        {
+            return ToODataString();
+        }
+
+        #endregion
 
         #region "Utility Functions"
 

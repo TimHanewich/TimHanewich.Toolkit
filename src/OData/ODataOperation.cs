@@ -499,6 +499,114 @@ namespace TimHanewich.Toolkit.OData
             }
         }
 
+        public HttpRequestMessage ToHttpRequestMessage(string host)
+        {
+            HttpRequestMessage ToReturn = new HttpRequestMessage();
+
+            //Method
+            if (Operation == DataOperation.Create)
+            {
+                ToReturn.Method = HttpMethod.Post;
+            }
+            else if (Operation == DataOperation.Read)
+            {
+                ToReturn.Method = HttpMethod.Get;
+            }
+            else if (Operation == DataOperation.Update)
+            {
+                ToReturn.Method = new HttpMethod("PATCH");
+            }
+            else if (Operation == DataOperation.Delete)
+            {
+                ToReturn.Method = HttpMethod.Delete;
+            }
+
+            //URL
+            UriBuilder ub = new UriBuilder();
+            ub.Host = host;
+
+            //Construct the query params
+            NameValueCollection nvc = HttpUtility.ParseQueryString(string.Empty);
+
+            //filter
+            string filterstmt = "";
+            List<ODataFilter> filtersToDoInOrder = new List<ODataFilter>(); //We need to ensure the first one is not one with an operator
+            foreach (ODataFilter f in filter)
+            {
+                if (f.LogicalOperatorPrefix.HasValue == false)
+                {
+                    filtersToDoInOrder.Insert(0, f);
+                }
+                else
+                {
+                    filtersToDoInOrder.Add(f);
+                }
+            }
+            foreach (ODataFilter f in filtersToDoInOrder)
+            {
+                filterstmt = filterstmt + f.ToODataString() + " ";
+            }
+            if (filterstmt.Length > 0)
+            {
+                filterstmt = filterstmt.Substring(0, filterstmt.Length-1);
+                nvc.Add("$filter", filterstmt);
+            }
+            
+            
+            //select
+            string selectstmt = "";
+            foreach (string c in select)
+            {
+                selectstmt = selectstmt + c + ",";
+            }
+            if (selectstmt.Length > 0)
+            {
+                selectstmt = selectstmt.Substring(0, selectstmt.Length-1); //Remove the final trailing comma
+                nvc.Add("$select", selectstmt);
+            }
+
+            //order by
+            string orderbystmt = "";
+            foreach (ODataOrder o in orderby)
+            {
+                orderbystmt = orderbystmt + o.ToODataString() + ",";
+            }
+            if (orderbystmt.Length > 0)
+            {
+                orderbystmt = orderbystmt.Substring(0, orderbystmt.Length-1); //Remove the final trailing comma
+                nvc.Add("$orderby", orderbystmt);
+            }
+
+            //Count
+            if (count == true)
+            {
+                nvc.Add("$count", "true");
+            }
+
+            //top
+            if (top.HasValue)
+            {
+                nvc.Add("$top", top.Value.ToString());
+            }
+
+            //skip
+            if (skip.HasValue)
+            {
+                nvc.Add("$skip", skip.Value.ToString());
+            }
+
+            //Set the uri
+            ub.Scheme = "https";
+            ub.Path = Resource;
+            ub.Query = nvc.ToString(); //Save the query
+            ToReturn.RequestUri = ub.Uri;
+
+
+            return ToReturn;
+
+
+        }
+
         public void Validate()
         {
             //If it is an update or delete operation, check if they are using filters. If they are, ensure it was allowed. If not, throw an error
