@@ -528,6 +528,11 @@ namespace TimHanewich.Toolkit.OData
             }
         }
 
+        public string ToSql()
+        {
+            return ToSql("<PRIMARY_KEY>");
+        }
+
         public HttpRequestMessage ToHttpRequestMessage(string odata_endpoint)
         {
             HttpRequestMessage ToReturn = new HttpRequestMessage();
