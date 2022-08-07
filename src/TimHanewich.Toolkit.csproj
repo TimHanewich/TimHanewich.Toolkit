@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Authors>Tim Hanewich</Authors>
     <Copyright>Tim Hanewich</Copyright>
     <PackageIcon>ToolIcon.jpg</PackageIcon>
