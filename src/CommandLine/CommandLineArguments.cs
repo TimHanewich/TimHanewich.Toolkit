@@ -76,5 +76,38 @@ namespace TimHanewich.Toolkit.CommandLine
             return false;
         }
 
+
+
+        public bool Contains(string label)
+        {
+            if (Arguments == null)
+            {
+                return false;
+            }
+
+            foreach (ArgumentValue av in Arguments)
+            {
+                if (av.Label == label)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public string Value(string label)
+        {
+            foreach (ArgumentValue av in Arguments)
+            {
+                if (av.Label == label)
+                {
+                    return av.Value;
+                }
+            }
+            return null;
+        }
+
+
     }
 }
