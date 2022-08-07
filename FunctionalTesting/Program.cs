@@ -1,6 +1,8 @@
 ﻿using System;
 using TimHanewich.Toolkit;
 using System.Threading.Tasks;
+using TimHanewich.Toolkit.CommandLine;
+using Newtonsoft.Json;
 
 namespace FunctionalTesting
 {
@@ -8,11 +10,16 @@ namespace FunctionalTesting
     {
         static void Main(string[] args)
         {
-            HanewichTimer ht = new HanewichTimer();
-            ht.StartTimer();
-            Task.Delay(5000).Wait();
-            ht.StopTimer();
-            Console.WriteLine(ht.GetElapsedTime().ToString());
+
+            CommandLineArguments cliargs = CommandLineArguments.Parse(args);
+            Console.WriteLine(JsonConvert.SerializeObject(cliargs, Formatting.Indented));
+
+            string v = cliargs.Value("agee");
+            if (v == null)
+            {
+                Console.WriteLine("IT WAS NULL");
+            }
+            Console.WriteLine(v);
         }
     }
 }
