@@ -49,5 +49,12 @@ namespace TimHanewich.Toolkit.Web
             int val = BitConverter.ToInt32(bytes, 0);
             return val;
         }
+    
+        public static IPAddress ToIPAddress(this int value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            IPAddress ip = new IPAddress(data);
+            return ip;
+        }
     }
 }
