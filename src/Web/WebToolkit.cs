@@ -1,8 +1,9 @@
 using System;
+using System.Net;
 
 namespace TimHanewich.Toolkit.Web
 {
-    public class WebToolkit
+    public static class WebToolkit
     {
         public static string HtmlToPlainText(string html_text)
         {
@@ -40,6 +41,13 @@ namespace TimHanewich.Toolkit.Web
             ALL = ALL.Replace("??", ""); //Random emojis
 
             return ALL;
+        }
+    
+        public static int ToInt32(this IPAddress ip)
+        {
+            byte[] bytes = ip.GetAddressBytes();
+            int val = BitConverter.ToInt32(bytes, 0);
+            return val;
         }
     }
 }
