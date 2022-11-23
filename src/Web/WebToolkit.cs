@@ -1,6 +1,6 @@
 using System;
 
-namespace TimHanewich.Toolkit
+namespace TimHanewich.Toolkit.Web
 {
     public class WebToolkit
     {
